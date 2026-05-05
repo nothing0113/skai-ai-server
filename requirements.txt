@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+python-dotenv
+requests
+httpx
+pydantic
+pydantic-settings
+numpy
+torch
+transformers
+sentence-transformers
+scipy
+scikit-learn
+pytest
