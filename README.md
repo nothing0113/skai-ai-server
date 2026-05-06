@@ -64,6 +64,8 @@ curl -s -X POST http://localhost:8000/chat \
 ```
 
 ### `/questions`
+`/chat`에서 사용자가 실제로 물어본 질문/궁금증(`history`)을 우선으로, 역설명(Reverse-Explanation) 과제를 생성합니다. `history`가 충분하면 이를 주 근거로 쓰고, 부족하면 `topic + outline`을 보조로 사용합니다. 응답 형식은 동일하게 `{ "questions": [...] }`이며 각 항목은 `questionId`, `question`, `modelAnswer`, `keywords`를 유지합니다.
+
 ```bash
 curl -s -X POST http://localhost:8000/questions \
   -H 'Content-Type: application/json' \
@@ -76,7 +78,9 @@ curl -s -X POST http://localhost:8000/questions \
       ]
     },
     "history": [
-      {"role": "user", "content": "문제 내줘"}
+      {"role": "user", "content": "RAG에서 검색 단계가 왜 필요한지 잘 모르겠어"},
+      {"role": "assistant", "content": "검색은 근거 문서를 찾기 위한 단계야."},
+      {"role": "user", "content": "그럼 파인튜닝이랑은 어떤 점이 다른지도 설명해줘"}
     ]
   }'
 ```
