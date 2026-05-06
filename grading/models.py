@@ -11,7 +11,10 @@ TOKEN_RE = re.compile(r"[a-z0-9가-힣]+")
 
 
 def _tokens(text: str) -> list[str]:
-    return TOKEN_RE.findall(text.lower())
+    lowered = text.lower()
+    lowered = re.sub(r"([a-z0-9])([가-힣])", r"\1 \2", lowered)
+    lowered = re.sub(r"([가-힣])([a-z0-9])", r"\1 \2", lowered)
+    return TOKEN_RE.findall(lowered)
 
 
 @dataclass

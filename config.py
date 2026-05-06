@@ -10,9 +10,9 @@ class Settings(BaseSettings):
     openrouter_api_key: str = ""
     openrouter_url: str = "https://openrouter.ai/api/v1/chat/completions"
     openrouter_model: str = "google/gemma-4-26b-a4b-it:free"
-    dense_model_name: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-    sparse_model_name: str = "bert-base-multilingual-cased"
-    device: str = "cpu"
+    dense_model_name: str = "dragonkue/snowflake-arctic-embed-l-v2.0-ko"
+    sparse_model_name: str = "yjoonjang/splade-ko-v1"
+    device: str = "auto"
 
     class Config:
         env_file = ".env"

@@ -37,10 +37,11 @@ PARSE_FAIL = {
 async def lifespan(_: FastAPI):
     global model_store
     if model_store is None:
+        runtime_device = _runtime_device()
         model_store = ModelStore.create(
             dense_model_name=settings.dense_model_name,
             sparse_model_name=settings.sparse_model_name,
-            device=settings.device,
+            device=runtime_device,
         )
     yield
 
@@ -77,10 +78,30 @@ def _runtime_device() -> str:
 
 @app.get("/health")
 def health():
+    dense_loaded = bool(model_store and model_store.dense._model is not None)
+    sparse_loaded = bool(model_store and model_store.sparse._tokenizer is not None)
+    dense_fallback = bool(model_store.dense.fallback) if model_store else True
+    sparse_fallback = bool(model_store.sparse.fallback) if model_store else True
     return {
         "status": "ok",
         "provider": settings.llm_provider.lower(),
         "device": _runtime_device(),
+        "models": {
+            "dense": {
+                "configured": settings.dense_model_name,
+                "loaded": dense_loaded,
+                "fallback": dense_fallback,
+            },
+            "sparse": {
+                "configured": settings.sparse_model_name,
+                "loaded": sparse_loaded,
+                "fallback": sparse_fallback,
+            },
+            "runtime": {
+                "loaded": dense_loaded and sparse_loaded,
+                "fallback": dense_fallback or sparse_fallback,
+            },
+        },
     }
 
 
