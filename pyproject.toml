@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "skai-ai-server"
+version = "0.1.0"
+description = "Stateless FastAPI AI server for skAI MVP"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "pydantic",
+  "sentence-transformers",
+  "transformers",
+  "torch",
+  "httpx",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
