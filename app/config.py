@@ -24,22 +24,9 @@ def _get_env_first(*keys: str, default: str = "") -> str:
 
 
 def get_llm_config() -> LLMConfig:
-    provider = os.getenv("LLM_PROVIDER", "openrouter").strip().lower() or "openrouter"
-    if provider not in {"omlx", "openrouter"}:
-        raise ValueError("LLM_PROVIDER must be one of: omlx, openrouter")
-
-    if provider == "omlx":
-        default_base = "http://127.0.0.1:11434/v1"
-        default_model = "supergemma4"
-        default_key = "omlx-local"
-    else:
-        default_base = "https://openrouter.ai/api/v1"
-        default_model = "google/gemma-4-26b-it"
-        default_key = ""
-
     return LLMConfig(
-        provider=provider,
-        base_url=_get_env_first("LLM_BASE_URL", "OPENROUTER_BASE_URL", default=default_base),
-        api_key=_get_env_first("LLM_API_KEY", "OPENROUTER_API_KEY", default=default_key),
-        model=_get_env_first("LLM_MODEL", "OPENROUTER_MODEL", default=default_model),
+        provider="openrouter",
+        base_url=_get_env_first("LLM_BASE_URL", "OPENROUTER_BASE_URL", default="https://openrouter.ai/api/v1"),
+        api_key=_get_env_first("LLM_API_KEY", "OPENROUTER_API_KEY", default=""),
+        model=_get_env_first("LLM_MODEL", "OPENROUTER_MODEL", default="google/gemma-3-27b-it"),
     )
