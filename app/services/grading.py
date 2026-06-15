@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 
-from app.schemas import Evidence, ScoreSet
+from app.schemas import Evidence, KeywordWithVariants, ScoreSet
 from app.services.keyword import keyword_match, normalize_text
 
 
@@ -30,13 +30,14 @@ def dense_to_score(sim: float) -> float:
 
 
 def sparse_to_score(sim: float) -> float:
-    return normalize_score(sim, low=0.05, high=0.45) * 100.0
+    # dot_product_similarity 기반: 동일 텍스트 ~0.8~1.0, 무관 텍스트 ~0.05~0.2
+    return normalize_score(sim, low=0.1, high=0.7) * 100.0
 
 
 def grade_answer(
     model_answer: str,
     student_answer: str,
-    keywords: list[str],
+    keywords: list[KeywordWithVariants],
     dense_vectors: list[list[float]],
     sparse_similarity: float,
 ) -> tuple[ScoreSet, Evidence]:

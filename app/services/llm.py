@@ -24,6 +24,7 @@ class LLMService:
             "model": self.config.model,
             "messages": [m.model_dump() for m in messages],
             "temperature": 0.2,
+            "max_tokens": 3000,
         }
         headers: dict[str, str] = {"Content-Type": "application/json"}
         if self.config.api_key:
@@ -31,7 +32,9 @@ class LLMService:
 
         url = self.config.base_url.rstrip("/") + "/chat/completions"
         try:
-            with httpx.Client(timeout=60.0) as client:
+
+
+            with httpx.Client(timeout=120.0) as client:
                 response = client.post(url, headers=headers, json=payload)
                 if not response.is_success:
                     logger.error("OpenRouter error %s: %s", response.status_code, response.text)
@@ -45,6 +48,10 @@ class LLMService:
             raise LLMServiceError(f"LLM request failed for provider={self.config.provider}") from exc
 
         try:
-            return str(body["choices"][0]["message"]["content"])
+            msg = body["choices"][0]["message"]
+            text = msg.get("content") or ""
+            if not text:
+                raise ValueError("empty content")
+            return str(text)
         except Exception as exc:
             raise LLMServiceError("LLM response schema invalid") from exc
