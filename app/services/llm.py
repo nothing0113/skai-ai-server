@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import httpx
 
 from app.config import LLMConfig
 from app.schemas import ChatMessage
+
+logger = logging.getLogger(__name__)
 
 
 class LLMServiceError(RuntimeError):
@@ -28,11 +31,17 @@ class LLMService:
 
         url = self.config.base_url.rstrip("/") + "/chat/completions"
         try:
-            with httpx.Client(timeout=20.0) as client:
+            with httpx.Client(timeout=60.0) as client:
                 response = client.post(url, headers=headers, json=payload)
+                if not response.is_success:
+                    logger.error("OpenRouter error %s: %s", response.status_code, response.text)
                 response.raise_for_status()
                 body: dict[str, Any] = response.json()
+        except httpx.TimeoutException as exc:
+            logger.error("OpenRouter timeout for model=%s", self.config.model)
+            raise LLMServiceError(f"LLM request timed out for provider={self.config.provider}") from exc
         except Exception as exc:
+            logger.error("OpenRouter request failed: %s", exc)
             raise LLMServiceError(f"LLM request failed for provider={self.config.provider}") from exc
 
         try:
